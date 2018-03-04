@@ -17,4 +17,7 @@ const getVideoById = (id) => new Promise((resolve) => {
   resolve(video);
 });
 
+const getVideos = () => new Promise((resolve) => resolve(videos));
+
 exports.getVideoById = getVideoById;
+exports.getVideos = getVideos;

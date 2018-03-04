@@ -8,9 +8,11 @@ const {
   GraphQLID,
   GraphQLString,
   GraphQLInt,
-  GraphQLBoolean
+  GraphQLBoolean,
+  GraphQLNonNull,
+  GraphQLList
 } = require('graphql');
-const { getVideoById } = require('./controllers/video.controller');
+const { getVideoById, getVideos } = require('./controllers/video.controller');
 
 const PORT = process.env.port || 3000;
 const server = express();
@@ -42,11 +44,16 @@ const queryType = new GraphQLObjectType({
   name: 'QueryType',
   description: 'The root query type.',
   fields: {
+    videos: {
+      type: new GraphQLList(videoType),
+      deescription: 'Return the list of videos',
+      resolve: () => getVideos()
+    },
     video: {
       type: videoType,
       args: {
         id: {
-          type: GraphQLID,
+          type: new GraphQLNonNull(GraphQLID),
           description: 'The id of the video'
         }
       },
