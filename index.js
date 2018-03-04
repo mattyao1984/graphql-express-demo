@@ -12,7 +12,7 @@ const {
   GraphQLNonNull,
   GraphQLList
 } = require('graphql');
-const { getVideoById, getVideos } = require('./controllers/video.controller');
+const { getVideoById, getVideos, createVideo } = require('./controllers/video.controller');
 
 const PORT = process.env.port || 3000;
 const server = express();
@@ -64,8 +64,34 @@ const queryType = new GraphQLObjectType({
   }
 });
 
+const mutationType = new GraphQLObjectType({
+  name: 'Mutation',
+  description: 'Mutation demo of the video',
+  fields: {
+    createVideo: {
+      type: videoType,
+      args: {
+        title: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: 'video title'
+        },
+        duration: {
+          type: new GraphQLNonNull(GraphQLInt),
+          description: 'video duration'
+        },
+        watched: {
+          type: new GraphQLNonNull(GraphQLBoolean),
+          description: 'video watched status'
+        }
+      },
+      resolve: (_, args) => createVideo(args)
+    }
+  }
+});
+
 const schema = new GraphQLSchema({
-  query: queryType
+  query: queryType,
+  mutation: mutationType
 });
 
 server.use('/graphql-data', graphqlHttp({
