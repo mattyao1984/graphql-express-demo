@@ -14,6 +14,11 @@ const {
 } = require('graphql');
 const { getVideoById, getVideos, createVideo } = require('./controllers/video.controller');
 
+const myInterface = require('./node');   // normal interface
+
+const { globalIdField } = require('graphql-relay');
+const { nodeInterface, nodeField } = require('./relay-interface');  // Relay interface
+
 const PORT = process.env.port || 3000;
 const server = express();
 
@@ -21,10 +26,7 @@ const videoType = new GraphQLObjectType({
   name: 'video',
   description: 'A video query type.',
   fields: {
-    id: {
-      type: GraphQLID,
-      description: 'ID of the video'
-    },
+    id: globalIdField(),
     title: {
       type: GraphQLString,
       description: 'The title of the video'
@@ -37,13 +39,16 @@ const videoType = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'The status of the video'
     }
-  }
+  },
+  interfaces: [nodeInterface]
 });
+exports.videoType = videoType;
 
 const queryType = new GraphQLObjectType({
   name: 'QueryType',
   description: 'The root query type.',
   fields: {
+    node: nodeField,
     videos: {
       type: new GraphQLList(videoType),
       deescription: 'Return the list of videos',
